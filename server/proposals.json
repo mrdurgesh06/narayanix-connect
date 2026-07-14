@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1782901004438,
+    "company": "TCS",
+    "name": "Raja Babu",
+    "email": "Shakyaraja60@gmail.com",
+    "phone": "+919557220763",
+    "website": "tcs",
+    "service": "Technical Support",
+    "budget": "₹2,00,000 - ₹10,00,000",
+    "message": "Thanks",
+    "createdAt": "2026-07-01T10:16:44.438Z"
+  },
+  {
+    "id": 1782901071223,
+    "company": "No",
+    "name": "Raja Babu",
+    "email": "Shakyaraja60@gmail.com",
+    "phone": "+919557220763",
+    "website": "",
+    "service": "Technical Support",
+    "budget": "₹2,00,000 - ₹10,00,000",
+    "message": "thanks",
+    "createdAt": "2026-07-01T10:17:51.223Z"
+  }
+]

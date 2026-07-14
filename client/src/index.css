@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette */
+  --color-navy-950: #07142e;
+  --color-navy-900: #0a2559;
+  --color-navy-800: #0b2e6d;
+  --color-navy-700: #123f94;
+  --color-navy-600: #1c4fb0;
+  --color-navy-100: #e7edf9;
+  --color-navy-50: #f2f5fc;
+
+  --color-gold-600: #b8912b;
+  --color-gold-500: #d4af37;
+  --color-gold-400: #e3c669;
+  --color-gold-300: #eeda9a;
+  --color-gold-100: #faf3dd;
+
+  --color-surface: #f8fafc;
+
+  /* Type */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Easing used throughout for premium, deliberate motion */
+  --ease-signature: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-300);
+    color: var(--color-navy-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-navy-700);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .bg-grid-light {
+    background-image:
+      linear-gradient(to right, rgba(11, 46, 109, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(11, 46, 109, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
