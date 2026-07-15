@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 import logo from "../assets/logo.png";
@@ -10,7 +11,17 @@ import {
   Mail,
   Lock,
   ArrowLeft,
+  ArrowRight,
+  ShieldCheck,
+  Activity,
+  BrainCircuit,
 } from "lucide-react";
+
+const highlights = [
+  { icon: Activity, label: "Real-time performance dashboards" },
+  { icon: BrainCircuit, label: "AI-assisted quality insights" },
+  { icon: ShieldCheck, label: "Enterprise-grade access controls" },
+];
 
 function Login() {
   const navigate = useNavigate();
@@ -59,224 +70,225 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-50 flex items-center justify-center px-5">
+    <div className="grid min-h-screen bg-white lg:grid-cols-2">
+      {/* Left — branded panel */}
+      <div className="relative hidden overflow-hidden bg-navy-950 lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="pointer-events-none absolute inset-0 bg-grid" />
+        <div className="pointer-events-none absolute -top-32 left-[10%] h-96 w-96 rounded-full bg-navy-600/35 blur-[120px]" />
+        <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-gold-500/12 blur-[120px]" />
 
-      <div className="w-full max-w-md">
-
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-blue-600 transition mb-6"
+        <svg
+          className="pointer-events-none absolute -right-20 bottom-0 h-[480px] w-[480px] opacity-[0.15]"
+          viewBox="0 0 400 400"
+          fill="none"
         >
-          <ArrowLeft size={18} />
-          Back to Website
-        </Link>
+          <g stroke="url(#loginLotusStroke)" strokeWidth="1.2">
+            <path d="M200 60 C170 130 170 200 200 260 C230 200 230 130 200 60Z" />
+            <path d="M110 130 C150 170 180 210 200 260 C170 240 120 220 90 190 C70 165 80 145 110 130Z" />
+            <path d="M290 130 C250 170 220 210 200 260 C230 240 280 220 310 190 C330 165 320 145 290 130Z" />
+            <path d="M60 220 C120 230 165 245 200 270 C155 265 100 270 65 285 C40 260 40 235 60 220Z" />
+            <path d="M340 220 C280 230 235 245 200 270 C245 265 300 270 335 285 C360 260 360 235 340 220Z" />
+          </g>
+          <defs>
+            <linearGradient id="loginLotusStroke" x1="0" y1="0" x2="400" y2="400">
+              <stop offset="0%" stopColor="#D4AF37" />
+              <stop offset="100%" stopColor="#123F94" />
+            </linearGradient>
+          </defs>
+        </svg>
 
-        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
-
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-center py-8 px-6">
-
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-white text-blue-600 flex items-center justify-center shadow-lg p-2">
-
-              <img src={logo} alt="NARAYANIX Connect" className="h-full w-full object-contain" />
-
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="relative"
+        >
+          <Link to="/" className="inline-flex items-center gap-3">
+            <img src={logo} alt="NARAYANIX Connect" className="h-11 w-auto" />
+            <div className="leading-none">
+              <span className="block text-lg font-extrabold tracking-tight text-white">
+                NARAYANIX
+              </span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.35em] text-gold-500">
+                Connect
+              </span>
             </div>
+          </Link>
+        </motion.div>
 
-            <h1 className="mt-5 text-3xl font-bold">
-              Admin Login
-            </h1>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="relative max-w-md"
+        >
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
+            <ShieldCheck size={13} className="text-gold-400" />
+            Administrator Portal
+          </span>
 
-            <p className="mt-2 text-blue-100">
-              NARAYANIX Connect
-            </p>
+          <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white">
+            Manage your CX platform, all in one place.
+          </h1>
 
+          <p className="mt-4 text-white/60">
+            Sign in to view live performance, manage leads and keep your
+            program running at its best.
+          </p>
+
+          <div className="mt-9 space-y-4">
+            {highlights.map((item) => (
+              <div key={item.label} className="flex items-center gap-3">
+                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/[0.06] text-gold-400">
+                  <item.icon size={16} />
+                </span>
+                <span className="text-sm font-medium text-white/75">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        <p className="relative text-xs text-white/30">
+          © {new Date().getFullYear()} NARAYANIX Connect. All Rights Reserved.
+        </p>
+      </div>
+
+      {/* Right — login form */}
+      <div className="flex items-center justify-center px-6 py-12 sm:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md"
+        >
+          <Link
+            to="/"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-navy-800"
+          >
+            <ArrowLeft size={16} />
+            Back to Website
+          </Link>
+
+          {/* Logo — mobile only, since the branded panel is hidden below lg */}
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <img src={logo} alt="NARAYANIX Connect" className="h-10 w-auto" />
+            <div className="leading-none">
+              <span className="block text-base font-extrabold tracking-tight text-navy-950">
+                NARAYANIX
+              </span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-gold-500">
+                Connect
+              </span>
+            </div>
           </div>
 
-          <form
-            onSubmit={login}
-            className="p-8"
-          >
-            {/* Email */}
+          <h2 className="text-3xl font-extrabold tracking-tight text-navy-950">
+            Welcome back
+          </h2>
+          <p className="mt-2 text-slate-500">
+            Sign in with your administrator credentials to continue.
+          </p>
 
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+          <form onSubmit={login} className="mt-9">
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
               Email Address
             </label>
 
             <div className="relative mb-5">
-
-              <Mail
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
+              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="you@narayanixconnect.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 text-navy-950 transition focus:border-navy-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy-700/15"
               />
-
             </div>
 
-            {/* Password */}
-
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
               Password
             </label>
 
             <div className="relative">
-
-              <Lock
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
+              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-12 pl-11 pr-12 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-12 text-navy-950 transition focus:border-navy-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy-700/15"
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-navy-700"
               >
-
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
-
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
-
             </div>
 
-            {/* Remember + Forgot */}
-
-            <div className="flex items-center justify-between mt-5 mb-7">
-
-              <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-
+            <div className="mb-8 mt-5 flex items-center justify-between">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
                 <input
                   type="checkbox"
                   checked={remember}
-                  onChange={(e) =>
-                    setRemember(e.target.checked)
-                  }
-                  className="accent-blue-600"
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="accent-navy-700"
                 />
-
                 Remember Me
-
               </label>
 
-              <button
-                type="button"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
+              <button type="button" className="text-sm font-semibold text-navy-700 hover:text-gold-600">
                 Forgot Password?
               </button>
-
             </div>
-                        {/* Login Button */}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold transition duration-300 shadow-lg"
+              className="group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gold-500 font-semibold text-navy-950 shadow-[0_10px_30px_-8px_rgba(212,175,55,0.55)] transition-all duration-300 hover:bg-gold-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
-
-              {loading ? "Signing In..." : "Login"}
-
+              {loading ? (
+                "Signing In..."
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                </>
+              )}
             </button>
 
-            {/* Divider */}
-
-            <div className="relative my-7">
-
-              <div className="absolute inset-0 flex items-center">
-
-                <div className="w-full border-t border-slate-200"></div>
-
-              </div>
-
-              <div className="relative flex justify-center">
-
-                <span className="bg-white px-4 text-sm text-slate-400">
-
-                  Secure Admin Access
-
-                </span>
-
-              </div>
-
+            <div className="my-8 flex items-center gap-4">
+              <div className="h-px flex-1 bg-slate-200" />
+              <span className="text-xs font-medium uppercase tracking-[0.15em] text-slate-400">
+                Secure Access
+              </span>
+              <div className="h-px flex-1 bg-slate-200" />
             </div>
 
-            {/* Information Box */}
-
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-
-              <h3 className="font-semibold text-slate-800">
-
-                Administrator Portal
-
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-
-                This portal is only for authorized administrators of
-                <strong> NARAYANIX Connect</strong>. Unauthorized
+            <div className="rounded-2xl border border-navy-950/5 bg-navy-50/60 p-4">
+              <h3 className="text-sm font-bold text-navy-950">Administrator Portal</h3>
+              <p className="mt-1.5 text-sm leading-6 text-slate-500">
+                This portal is only for authorized administrators of{" "}
+                <strong className="text-navy-800">NARAYANIX Connect</strong>. Unauthorized
                 access attempts may be monitored and logged.
-
               </p>
-
             </div>
-                      </form>
+          </form>
 
-          {/* Footer */}
-
-          <div className="border-t border-slate-200 bg-slate-50 px-8 py-5">
-
-            <div className="flex flex-col items-center justify-center text-center gap-2">
-
-              <p className="text-sm text-slate-600">
-
-                Need help accessing your account?
-
-              </p>
-
-              <Link
-                to="/contact"
-                className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
-              >
-                Contact Support
-              </Link>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Copyright */}
-
-        <p className="mt-6 text-center text-sm text-slate-500">
-
-          © {new Date().getFullYear()} NARAYANIX Connect.
-          <br />
-          All Rights Reserved.
-
-        </p>
-
+          <p className="mt-8 text-center text-sm text-slate-500">
+            Need help accessing your account?{" "}
+            <Link to="/contact" className="font-semibold text-navy-700 hover:text-gold-600">
+              Contact Support
+            </Link>
+          </p>
+        </motion.div>
       </div>
-
     </div>
-      );
+  );
 }
 
 export default Login;
-          

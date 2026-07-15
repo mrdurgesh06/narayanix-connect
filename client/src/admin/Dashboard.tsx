@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 import {
   Users,
@@ -9,7 +10,7 @@ import {
   TrendingUp,
   UserPlus,
   ArrowRight,
-  CheckCircle2,
+  ShieldCheck,
   Clock3,
   Briefcase,
 } from "lucide-react";
@@ -48,1030 +49,467 @@ type DashboardData = {
   latestProposals: Proposal[];
 };
 
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
+
 function Dashboard() {
+  const [data, setData] = useState<DashboardData>({
+    totalContacts: 0,
+    totalProposals: 0,
+    latestContacts: [],
+    latestProposals: [],
+  });
 
-  const [data, setData] =
-    useState<DashboardData>({
-      totalContacts: 0,
-      totalProposals: 0,
-      latestContacts: [],
-      latestProposals: [],
-    });
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
-const chartData = [
-  {
-    name: "Contacts",
-    value: data.totalContacts,
-  },
-  {
-    name: "Proposals",
-    value: data.totalProposals,
-  },
-  {
-    name: "Leads",
-    value:
-      data.totalContacts +
-      data.totalProposals,
-  },
-];
+  const chartData = [
+    { name: "Contacts", value: data.totalContacts },
+    { name: "Proposals", value: data.totalProposals },
+    { name: "Leads", value: data.totalContacts + data.totalProposals },
+  ];
 
   const loadDashboard = async () => {
-
     try {
-
-      const res =
-        await api.get("/admin/dashboard");
-
+      const res = await api.get("/admin/dashboard");
       setData(res.data);
-
     } catch (error) {
-
       console.error(error);
-
       alert("Unable to connect to server.");
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   useEffect(() => {
     loadDashboard();
   }, []);
 
+  const statCards = [
+    {
+      label: "Total Contacts",
+      value: data.totalContacts,
+      badge: "Active Leads",
+      badgeIcon: TrendingUp,
+      icon: Users,
+      accent: false,
+    },
+    {
+      label: "Total Proposals",
+      value: data.totalProposals,
+      badge: "Business Requests",
+      badgeIcon: Briefcase,
+      icon: FileText,
+      accent: false,
+    },
+    {
+      label: "Active Leads",
+      value: data.totalContacts + data.totalProposals,
+      badge: "Potential Clients",
+      badgeIcon: UserPlus,
+      icon: UserPlus,
+      accent: true,
+    },
+    {
+      label: "Server Status",
+      value: "Online",
+      badge: "Running Smoothly",
+      badgeIcon: null,
+      icon: Server,
+      accent: false,
+      status: true,
+    },
+    {
+      label: "Website Activity",
+      value: "Active",
+      badge: "Receiving Requests",
+      badgeIcon: Activity,
+      icon: Activity,
+      accent: false,
+    },
+    {
+      label: "Business Growth",
+      value: "+24%",
+      badge: "This Month",
+      badgeIcon: TrendingUp,
+      icon: TrendingUp,
+      accent: true,
+    },
+  ];
+
   if (loading) {
-
     return (
-
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-
+      <div className="flex h-screen items-center justify-center bg-surface">
         <div className="text-center">
-
-          <div className="mx-auto h-20 w-20 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
-
-          <h2 className="mt-8 text-3xl font-bold text-slate-800">
-
-            Loading Dashboard...
-
-          </h2>
-
-          <p className="mt-3 text-slate-500">
-
-            Fetching latest business data...
-
-          </p>
-
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-navy-100 border-t-navy-700" />
+          <h2 className="mt-6 text-xl font-bold text-navy-950">Loading Dashboard...</h2>
+          <p className="mt-1.5 text-sm text-slate-500">Fetching latest business data...</p>
         </div>
-
       </div>
-
     );
-
   }
 
   return (
-
-    <div className="space-y-10">
-
+    <div className="space-y-5">
       {/* Premium Header */}
+      <motion.div
+        {...fadeUp(0)}
+        className="relative overflow-hidden rounded-2xl bg-navy-950 p-5 shadow-[0_16px_40px_-20px_rgba(7,20,46,0.4)] sm:p-6"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-50" />
+        <div className="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-gold-500/12 blur-[90px]" />
+        <div className="pointer-events-none absolute -bottom-20 left-0 h-56 w-56 rounded-full bg-navy-600/30 blur-[90px]" />
 
-      <div className="overflow-hidden rounded-[34px] bg-gradient-to-r from-blue-700 via-cyan-600 to-sky-500 p-[1px] shadow-2xl">
-
-        <div className="rounded-[33px] bg-white p-10">
-
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-
-            <div>
-
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-5 py-2 font-semibold text-blue-700">
-
-                <CheckCircle2 size={18} />
-
-                NARAYANIX Admin Dashboard
-
-              </div>
-
-              <h1 className="mt-6 text-5xl font-black text-slate-900">
-
-                Welcome Back,
-                <span className="text-blue-600">
-
-                  {" "}Administrator
-
-                </span>
-
-              </h1>
-
-              <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-
-                Monitor enquiries, proposal requests and system
-                performance from one centralized dashboard.
-
-              </p>
-
+        <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/70">
+              <ShieldCheck size={11} className="text-gold-400" />
+              NARAYANIX Admin Dashboard
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              Welcome Back, <span className="text-gradient-gold">Administrator</span>
+            </h1>
 
-              <div className="rounded-3xl bg-slate-50 p-6 text-center">
-
-                <Clock3
-                  size={32}
-                  className="mx-auto text-blue-600"
-                />
-
-                <h3 className="mt-3 text-3xl font-black text-slate-900">
-
-                  24×7
-
-                </h3>
-
-                <p className="mt-2 text-slate-500">
-
-                  Monitoring
-
-                </p>
-
-              </div>
-
-              <div className="rounded-3xl bg-slate-50 p-6 text-center">
-
-                <TrendingUp
-                  size={32}
-                  className="mx-auto text-green-600"
-                />
-
-                <h3 className="mt-3 text-3xl font-black text-slate-900">
-
-                  Live
-
-                </h3>
-
-                <p className="mt-2 text-slate-500">
-
-                  Business Data
-
-                </p>
-
-              </div>
-
-            </div>
-
+            <p className="mt-2 max-w-xl text-sm text-white/60">
+              Monitor enquiries, proposal requests and system performance
+              from one centralized dashboard.
+            </p>
           </div>
 
-        </div>
+          <div className="grid w-full grid-cols-2 gap-3 sm:w-auto">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-center backdrop-blur-xl">
+              <Clock3 size={18} className="mx-auto text-gold-400" />
+              <h3 className="mt-1.5 text-lg font-extrabold text-white">24×7</h3>
+              <p className="text-[11px] text-white/50">Monitoring</p>
+            </div>
 
-      </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-center backdrop-blur-xl">
+              <TrendingUp size={18} className="mx-auto text-emerald-400" />
+              <h3 className="mt-1.5 text-lg font-extrabold text-white">Live</h3>
+              <p className="text-[11px] text-white/50">Business Data</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Statistics */}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {statCards.map((card, i) => (
+          <motion.div
+            key={card.label}
+            {...fadeUp(0.04 * i)}
+            whileHover={{ y: -4 }}
+            className="group rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)] transition-shadow duration-300 hover:shadow-[0_16px_30px_-16px_rgba(11,46,109,0.2)]"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-500">{card.label}</p>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <h2
+                  className={`mt-2 text-2xl font-extrabold ${
+                    card.accent ? "text-gold-600" : "text-navy-950"
+                  }`}
+                >
+                  {card.value}
+                </h2>
 
-              {/* Total Contacts */}
-
-        <div className="group rounded-[30px] border border-blue-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Total Contacts
-
-              </p>
-
-              <h2 className="mt-5 text-5xl font-black text-blue-600">
-
-                {data.totalContacts}
-
-              </h2>
-
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-600">
-
-                <TrendingUp size={16} />
-
-                <span className="font-semibold">
-
-                  Active Leads
-
-                </span>
-
+                <div
+                  className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    card.status
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "bg-navy-50 text-navy-700"
+                  }`}
+                >
+                  {card.status ? (
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  ) : (
+                    card.badgeIcon && <card.badgeIcon size={12} />
+                  )}
+                  {card.badge}
+                </div>
               </div>
 
-            </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-xl">
-
-              <Users
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Total Proposals */}
-
-        <div className="group rounded-[30px] border border-green-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Total Proposals
-
-              </p>
-
-              <h2 className="mt-5 text-5xl font-black text-green-600">
-
-                {data.totalProposals}
-
-              </h2>
-
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-green-600">
-
-                <Briefcase size={16} />
-
-                <span className="font-semibold">
-
-                  Business Requests
-
-                </span>
-
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-950 text-white shadow-md transition-transform duration-300 group-hover:scale-105">
+                <card.icon size={20} />
               </div>
-
             </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-500 to-emerald-500 shadow-xl">
-
-              <FileText
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Active Leads */}
-
-        <div className="group rounded-[30px] border border-purple-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Active Leads
-
-              </p>
-
-              <h2 className="mt-5 text-5xl font-black text-purple-600">
-
-                {data.totalContacts + data.totalProposals}
-
-              </h2>
-
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-purple-50 px-4 py-2 text-purple-600">
-
-                <UserPlus size={16} />
-
-                <span className="font-semibold">
-
-                  Potential Clients
-
-                </span>
-
-              </div>
-
-            </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-xl">
-
-              <UserPlus
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Server Status */}
-
-        <div className="group rounded-[30px] border border-emerald-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Server Status
-
-              </p>
-
-              <h2 className="mt-5 text-4xl font-black text-emerald-600">
-
-                Online
-
-              </h2>
-
-              <div className="mt-5 flex items-center gap-3">
-
-                <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-500"></span>
-
-                <span className="font-semibold text-emerald-600">
-
-                  Running Smoothly
-
-                </span>
-
-              </div>
-
-            </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-xl">
-
-              <Server
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Website Activity */}
-
-        <div className="group rounded-[30px] border border-orange-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Website Activity
-
-              </p>
-
-              <h2 className="mt-5 text-4xl font-black text-orange-500">
-
-                Active
-
-              </h2>
-
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-orange-600">
-
-                <Activity size={16} />
-
-                <span className="font-semibold">
-
-                  Receiving Requests
-
-                </span>
-
-              </div>
-
-            </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl">
-
-              <Activity
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Growth */}
-
-        <div className="group rounded-[30px] border border-cyan-100 bg-white p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-
-                Business Growth
-
-              </p>
-
-              <h2 className="mt-5 text-5xl font-black text-cyan-600">
-
-                +24%
-
-              </h2>
-
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-cyan-50 px-4 py-2 text-cyan-600">
-
-                <TrendingUp size={16} />
-
-                <span className="font-semibold">
-
-                  This Month
-
-                </span>
-
-              </div>
-
-            </div>
-
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-xl">
-
-              <TrendingUp
-                size={38}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
+          </motion.div>
+        ))}
       </div>
 
       {/* Recent Activity */}
-            <div className="grid gap-8 xl:grid-cols-2">
-
+      <div className="grid gap-4 xl:grid-cols-2">
         {/* Recent Contacts */}
-
-        <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-          <div className="mb-8 flex items-center justify-between">
-
+        <motion.div
+          {...fadeUp(0.08)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)]"
+        >
+          <div className="mb-4 flex items-center justify-between">
             <div>
-
-              <h2 className="text-3xl font-black text-slate-900">
-
-                Recent Contacts
-
-              </h2>
-
-              <p className="mt-2 text-slate-500">
-
-                Latest customer enquiries
-
-              </p>
-
+              <h2 className="text-lg font-extrabold text-navy-950">Recent Contacts</h2>
+              <p className="text-xs text-slate-500">Latest customer enquiries</p>
             </div>
 
             <Link
               to="/admin/contacts"
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
+              className="inline-flex items-center gap-1.5 rounded-full bg-navy-950 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-navy-800"
             >
-
               View All
-
-              <ArrowRight size={18} />
-
+              <ArrowRight size={13} />
             </Link>
-
           </div>
 
           {data.latestContacts.length === 0 ? (
-
-            <div className="rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center">
-
-              <Users
-                size={50}
-                className="mx-auto text-slate-300"
-              />
-
-              <h3 className="mt-5 text-xl font-bold text-slate-700">
-
-                No Contacts Yet
-
-              </h3>
-
-              <p className="mt-2 text-slate-500">
-
-                New enquiries will appear here.
-
-              </p>
-
+            <div className="rounded-xl border-2 border-dashed border-slate-200 py-10 text-center">
+              <Users size={32} className="mx-auto text-slate-300" />
+              <h3 className="mt-3 text-base font-bold text-slate-700">No Contacts Yet</h3>
+              <p className="mt-1 text-xs text-slate-500">New enquiries will appear here.</p>
             </div>
-
           ) : (
-
-            <div className="space-y-5">
-
+            <div className="space-y-3">
               {data.latestContacts.map((contact) => (
-
                 <div
                   key={contact.id}
-                  className="rounded-2xl border border-slate-200 p-5 transition-all duration-300 hover:border-blue-200 hover:bg-blue-50"
+                  className="rounded-lg border border-navy-950/5 p-3 transition-all duration-300 hover:border-gold-500/30 hover:bg-navy-50/50"
                 >
-
-                  <div className="flex items-center justify-between">
-
-                    <div>
-
-                      <h3 className="text-xl font-bold text-slate-900">
-
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-sm font-bold text-navy-950">
                         {contact.name}
-
                       </h3>
-
-                      <p className="mt-1 text-slate-500">
-
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
                         {contact.company || "No Company"}
-
                       </p>
-
-                      <p className="mt-2 text-blue-600">
-
-                        {contact.email}
-
-                      </p>
-
+                      <p className="truncate text-xs text-navy-700">{contact.email}</p>
                     </div>
 
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 text-xl font-bold text-white">
-
+                    <div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-navy-950 text-sm font-bold text-white">
                       {contact.name.charAt(0)}
-
                     </div>
-
                   </div>
-
                 </div>
-
               ))}
-
             </div>
-
           )}
-
-        </div>
+        </motion.div>
 
         {/* Recent Proposals */}
-
-        <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-          <div className="mb-8 flex items-center justify-between">
-
+        <motion.div
+          {...fadeUp(0.12)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)]"
+        >
+          <div className="mb-4 flex items-center justify-between">
             <div>
-
-              <h2 className="text-3xl font-black text-slate-900">
-
-                Recent Proposals
-
-              </h2>
-
-              <p className="mt-2 text-slate-500">
-
-                Latest proposal requests
-
-              </p>
-
+              <h2 className="text-lg font-extrabold text-navy-950">Recent Proposals</h2>
+              <p className="text-xs text-slate-500">Latest proposal requests</p>
             </div>
 
             <Link
               to="/admin/proposals"
-              className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-3 font-semibold text-white transition hover:bg-green-700"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-3.5 py-2 text-xs font-semibold text-navy-950 transition hover:bg-gold-400"
             >
-
               View All
-
-              <ArrowRight size={18} />
-
+              <ArrowRight size={13} />
             </Link>
-
           </div>
 
           {data.latestProposals.length === 0 ? (
-
-            <div className="rounded-2xl border-2 border-dashed border-slate-200 py-16 text-center">
-
-              <FileText
-                size={50}
-                className="mx-auto text-slate-300"
-              />
-
-              <h3 className="mt-5 text-xl font-bold text-slate-700">
-
-                No Proposals Yet
-
-              </h3>
-
-              <p className="mt-2 text-slate-500">
-
+            <div className="rounded-xl border-2 border-dashed border-slate-200 py-10 text-center">
+              <FileText size={32} className="mx-auto text-slate-300" />
+              <h3 className="mt-3 text-base font-bold text-slate-700">No Proposals Yet</h3>
+              <p className="mt-1 text-xs text-slate-500">
                 Proposal requests will appear here.
-
               </p>
-
             </div>
-
           ) : (
-
-            <div className="space-y-5">
-
+            <div className="space-y-3">
               {data.latestProposals.map((proposal) => (
-
                 <div
                   key={proposal.id}
-                  className="rounded-2xl border border-slate-200 p-5 transition-all duration-300 hover:border-green-200 hover:bg-green-50"
+                  className="rounded-lg border border-navy-950/5 p-3 transition-all duration-300 hover:border-gold-500/30 hover:bg-navy-50/50"
                 >
-
-                  <div className="flex items-center justify-between">
-
-                    <div>
-
-                      <h3 className="text-xl font-bold text-slate-900">
-
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-sm font-bold text-navy-950">
                         {proposal.company}
-
                       </h3>
-
-                      <p className="mt-1 text-slate-500">
-
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
                         {proposal.name}
-
                       </p>
-
-                      <span className="mt-3 inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-
+                      <span className="mt-1.5 inline-block rounded-full bg-gold-100 px-2.5 py-0.5 text-[11px] font-semibold text-gold-700">
                         {proposal.service}
-
                       </span>
-
                     </div>
 
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 text-xl font-bold text-white">
-
+                    <div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-gold-500 text-sm font-bold text-navy-950">
                       {proposal.company.charAt(0)}
-
                     </div>
-
                   </div>
-
                 </div>
-
               ))}
-
             </div>
-
           )}
-
-        </div>
-
+        </motion.div>
       </div>
 
-{/* Dashboard Charts */}
+      {/* Dashboard Charts */}
+      <div className="grid gap-4 xl:grid-cols-2">
+        <motion.div
+          {...fadeUp(0.08)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)]"
+        >
+          <h2 className="mb-4 text-lg font-extrabold text-navy-950">Contacts Overview</h2>
 
-<div className="grid gap-8 xl:grid-cols-2">
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5eaf3" />
+                <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} allowDecimals={false} width={28} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 10,
+                    border: "1px solid #e5eaf3",
+                    fontSize: 12,
+                  }}
+                />
+                <Bar dataKey="value" fill="#123F94" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
 
-  {/* Contacts Chart */}
+        <motion.div
+          {...fadeUp(0.12)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)]"
+        >
+          <h2 className="mb-4 text-lg font-extrabold text-navy-950">Business Overview</h2>
 
-  <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-    <h2 className="text-3xl font-black text-slate-900 mb-8">
-
-      Contacts Overview
-
-    </h2>
-
-    <div className="h-80">
-
-      <ResponsiveContainer width="100%" height="100%">
-
-        <BarChart data={chartData}>
-
-          <CartesianGrid strokeDasharray="3 3" />
-
-          <XAxis dataKey="name" />
-
-          <YAxis />
-
-          <Tooltip />
-
-          <Bar
-            dataKey="value"
-            radius={[8, 8, 0, 0]}
-          />
-
-        </BarChart>
-
-      </ResponsiveContainer>
-
-    </div>
-
-  </div>
-
-  {/* Leads Chart */}
-
-  <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-    <h2 className="text-3xl font-black text-slate-900 mb-8">
-
-      Business Overview
-
-    </h2>
-
-    <div className="h-80">
-
-      <ResponsiveContainer width="100%" height="100%">
-
-        <LineChart data={chartData}>
-
-          <CartesianGrid strokeDasharray="3 3" />
-
-          <XAxis dataKey="name" />
-
-          <YAxis />
-
-          <Tooltip />
-
-          <Line
-            type="monotone"
-            dataKey="value"
-            strokeWidth={4}
-          />
-
-        </LineChart>
-
-      </ResponsiveContainer>
-
-    </div>
-
-  </div>
-
-</div>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5eaf3" />
+                <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} allowDecimals={false} width={28} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 10,
+                    border: "1px solid #e5eaf3",
+                    fontSize: 12,
+                  }}
+                />
+                <Line type="monotone" dataKey="value" stroke="#D4AF37" strokeWidth={2.5} dot={{ fill: "#D4AF37", r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Quick Actions */}
-            <div className="grid gap-8 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
+        <motion.div
+          {...fadeUp(0.08)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)] xl:col-span-2"
+        >
+          <h2 className="text-lg font-extrabold text-navy-950">Quick Actions</h2>
+          <p className="text-xs text-slate-500">Frequently used admin shortcuts.</p>
 
-        {/* Quick Actions */}
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <Link
+              to="/admin/contacts"
+              className="group rounded-xl border border-navy-950/5 bg-navy-50/60 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-navy-950"
+            >
+              <Users size={22} className="text-navy-700 group-hover:text-gold-400" />
+              <h3 className="mt-2.5 text-sm font-bold text-navy-950 group-hover:text-white">
+                Manage Contacts
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 group-hover:text-white/60">
+                View, search and manage all customer enquiries.
+              </p>
+            </Link>
 
-        <div className="xl:col-span-2 rounded-[32px] bg-gradient-to-r from-blue-700 via-cyan-600 to-sky-500 p-[1px] shadow-2xl">
+            <Link
+              to="/admin/proposals"
+              className="group rounded-xl border border-navy-950/5 bg-navy-50/60 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-navy-950"
+            >
+              <FileText size={22} className="text-navy-700 group-hover:text-gold-400" />
+              <h3 className="mt-2.5 text-sm font-bold text-navy-950 group-hover:text-white">
+                Manage Proposals
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 group-hover:text-white/60">
+                Review and respond to proposal requests.
+              </p>
+            </Link>
 
-          <div className="rounded-[31px] bg-white p-8">
-
-            <div className="flex items-center justify-between">
-
-              <div>
-
-                <h2 className="text-3xl font-black text-slate-900">
-
-                  Quick Actions
-
-                </h2>
-
-                <p className="mt-2 text-slate-500">
-
-                  Frequently used admin shortcuts.
-
-                </p>
-
-              </div>
-
+            <div className="rounded-xl border border-navy-950/5 bg-navy-50/60 p-4">
+              <Activity size={22} className="text-navy-700" />
+              <h3 className="mt-2.5 text-sm font-bold text-navy-950">Live Activity</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Website is actively receiving enquiries.
+              </p>
             </div>
 
-            <div className="mt-8 grid gap-5 md:grid-cols-2">
-
-              <Link
-                to="/admin/contacts"
-                className="group rounded-3xl border border-blue-100 bg-blue-50 p-6 transition-all duration-300 hover:-translate-y-2 hover:bg-blue-600 hover:text-white"
-              >
-
-                <Users
-                  size={38}
-                  className="text-blue-600 group-hover:text-white"
-                />
-
-                <h3 className="mt-5 text-2xl font-bold">
-
-                  Manage Contacts
-
-                </h3>
-
-                <p className="mt-2 text-slate-600 group-hover:text-blue-100">
-
-                  View, search and manage all customer enquiries.
-
-                </p>
-
-              </Link>
-
-              <Link
-                to="/admin/proposals"
-                className="group rounded-3xl border border-green-100 bg-green-50 p-6 transition-all duration-300 hover:-translate-y-2 hover:bg-green-600 hover:text-white"
-              >
-
-                <FileText
-                  size={38}
-                  className="text-green-600 group-hover:text-white"
-                />
-
-                <h3 className="mt-5 text-2xl font-bold">
-
-                  Manage Proposals
-
-                </h3>
-
-                <p className="mt-2 text-slate-600 group-hover:text-green-100">
-
-                  Review and respond to proposal requests.
-
-                </p>
-
-              </Link>
-
-              <div className="group rounded-3xl border border-orange-100 bg-orange-50 p-6 transition-all duration-300 hover:-translate-y-2">
-
-                <Activity
-                  size={38}
-                  className="text-orange-500"
-                />
-
-                <h3 className="mt-5 text-2xl font-bold text-slate-900">
-
-                  Live Activity
-
-                </h3>
-
-                <p className="mt-2 text-slate-600">
-
-                  Website is actively receiving enquiries.
-
-                </p>
-
-              </div>
-
-              <div className="group rounded-3xl border border-emerald-100 bg-emerald-50 p-6 transition-all duration-300 hover:-translate-y-2">
-
-                <Server
-                  size={38}
-                  className="text-emerald-600"
-                />
-
-                <h3 className="mt-5 text-2xl font-bold text-slate-900">
-
-                  Server Health
-
-                </h3>
-
-                <p className="mt-2 text-slate-600">
-
-                  Backend services are operating normally.
-
-                </p>
-
-              </div>
-
+            <div className="rounded-xl border border-navy-950/5 bg-navy-50/60 p-4">
+              <Server size={22} className="text-navy-700" />
+              <h3 className="mt-2.5 text-sm font-bold text-navy-950">Server Health</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Backend services are operating normally.
+              </p>
             </div>
+          </div>
+        </motion.div>
 
+        {/* System Status */}
+        <motion.div
+          {...fadeUp(0.12)}
+          className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-[0_2px_12px_-8px_rgba(11,46,109,0.08)]"
+        >
+          <h2 className="text-lg font-extrabold text-navy-950">System Status</h2>
+
+          <div className="mt-3.5 space-y-3">
+            {[
+              { label: "Website", value: "Running", tone: "positive" },
+              { label: "Backend", value: "Online", tone: "positive" },
+              { label: "Database", value: "Connected", tone: "info" },
+              { label: "Admin Version", value: "v2.0", tone: "plain" },
+              { label: "Last Updated", value: new Date().toLocaleDateString(), tone: "plain" },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between">
+                <span className="text-xs text-slate-500">{row.label}</span>
+
+                {row.tone === "plain" ? (
+                  <span className="text-xs font-bold text-navy-950">{row.value}</span>
+                ) : (
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                      row.tone === "positive"
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "bg-navy-50 text-navy-700"
+                    }`}
+                  >
+                    {row.value}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
 
-        </div>
-
-        {/* System Information */}
-
-        <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-          <h2 className="text-3xl font-black text-slate-900">
-
-            System Status
-
-          </h2>
-
-          <div className="mt-8 space-y-6">
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-500">
-
-                Website
-
-              </span>
-
-              <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-
-                Running
-
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-500">
-
-                Backend
-
-              </span>
-
-              <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-
-                Online
-
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-500">
-
-                Database
-
-              </span>
-
-              <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-
-                Connected
-
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-500">
-
-                Admin Version
-
-              </span>
-
-              <span className="font-bold text-slate-900">
-
-                v2.0
-
-              </span>
-
-            </div>
-
-            <div className="flex items-center justify-between">
-
-              <span className="text-slate-500">
-
-                Last Updated
-
-              </span>
-
-              <span className="font-semibold text-slate-900">
-
-                {new Date().toLocaleDateString()}
-
-              </span>
-
-            </div>
-
-          </div>
-
-          <div className="mt-10 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 p-6 text-white">
-
-            <TrendingUp size={34} />
-
-            <h3 className="mt-5 text-2xl font-bold">
-
-              Business Insights
-
-            </h3>
-
-            <p className="mt-3 text-blue-100 leading-7">
-
-              Keep monitoring customer enquiries and proposal requests
-              to identify new business opportunities.
-
+          <div className="relative mt-5 overflow-hidden rounded-xl bg-navy-950 p-4 text-white">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gold-500/20 blur-2xl" />
+            <TrendingUp size={18} className="relative text-gold-400" />
+            <h3 className="relative mt-2.5 text-sm font-bold">Business Insights</h3>
+            <p className="relative mt-1.5 text-xs leading-5 text-white/60">
+              Keep monitoring customer enquiries and proposal requests to
+              identify new business opportunities.
             </p>
-
           </div>
-
-        </div>
-
+        </motion.div>
       </div>
-
     </div>
-
   );
-
 }
 
 export default Dashboard;

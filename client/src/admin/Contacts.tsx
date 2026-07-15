@@ -1,12 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
-import {
-  Download,
-  Users,
-  Search,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+import { Download, Users, Search, RotateCw, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import api from "../api/api";
@@ -17,493 +12,244 @@ import ContactSearch from "./ContactSearch";
 import ContactTable from "./ContactTable";
 import ContactModal from "./ContactModal";
 
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
+
 function Contacts() {
-
-  const [contacts, setContacts] =
-    useState<Contact[]>([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [search, setSearch] =
-    useState("");
-
-  const [selectedContact, setSelectedContact] =
-    useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const loadContacts = async () => {
-
     try {
-
-      const res =
-        await api.get("/admin/contacts");
-
+      const res = await api.get("/admin/contacts");
       setContacts(res.data);
-
     } catch (error) {
-
       console.log(error);
-
-      toast.error(
-        "Unable to load contacts."
-      );
-
+      toast.error("Unable to load contacts.");
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   useEffect(() => {
     loadContacts();
   }, []);
 
-  const filteredContacts =
-    useMemo(() => {
+  const filteredContacts = useMemo(() => {
+    const keyword = search.toLowerCase();
 
-      const keyword =
-        search.toLowerCase();
+    return contacts.filter(
+      (item) =>
+        item.name.toLowerCase().includes(keyword) ||
+        item.company.toLowerCase().includes(keyword) ||
+        item.email.toLowerCase().includes(keyword) ||
+        item.phone.toLowerCase().includes(keyword)
+    );
+  }, [contacts, search]);
 
-      return contacts.filter((item) =>
-
-        item.name
-          .toLowerCase()
-          .includes(keyword) ||
-
-        item.company
-          .toLowerCase()
-          .includes(keyword) ||
-
-        item.email
-          .toLowerCase()
-          .includes(keyword) ||
-
-        item.phone
-          .toLowerCase()
-          .includes(keyword)
-
-      );
-
-    }, [contacts, search]);
-
-  const handleView = (
-    contact: Contact
-  ) => {
-
+  const handleView = (contact: Contact) => {
     setSelectedContact(contact);
-
   };
 
-  const handleDelete = async (
-    contact: Contact
-  ) => {
-
-    const ok =
-      window.confirm(
-        `Delete ${contact.name}?`
-      );
-
+  const handleDelete = async (contact: Contact) => {
+    const ok = window.confirm(`Delete ${contact.name}?`);
     if (!ok) return;
 
     try {
-
-      await api.delete(
-        `/admin/contacts/${contact.id}`
-      );
-
-      toast.success(
-        "Contact deleted successfully."
-      );
-
+      await api.delete(`/admin/contacts/${contact.id}`);
+      toast.success("Contact deleted successfully.");
       loadContacts();
-
     } catch (error) {
-
       console.log(error);
-
-      toast.error(
-        "Delete failed."
-      );
-
+      toast.error("Delete failed.");
     }
-
   };
 
   const exportCSV = () => {
-
     if (filteredContacts.length === 0) {
-
-      toast.error(
-        "No contacts available."
-      );
-
+      toast.error("No contacts available.");
       return;
-
     }
 
-    const headers = [
-      "Name",
-      "Company",
-      "Email",
-      "Phone",
-      "Date",
-    ];
+    const headers = ["Name", "Company", "Email", "Phone", "Date"];
 
-    const rows =
-      filteredContacts.map(
-        (item) => [
+    const rows = filteredContacts.map((item) => [
+      item.name,
+      item.company || "",
+      item.email,
+      item.phone,
+      new Date(item.createdAt).toLocaleDateString(),
+    ]);
 
-          item.name,
-
-          item.company || "",
-
-          item.email,
-
-          item.phone,
-
-          new Date(
-            item.createdAt
-          ).toLocaleDateString(),
-
-        ]
-      );
-
-    const csv =
-      [headers, ...rows]
-        .map((row) => row.join(","))
-        .join("\n");
-
-    const blob =
-      new Blob(
-        [csv],
-        {
-          type: "text/csv;charset=utf-8;",
-        }
-      );
-
-    const url =
-      URL.createObjectURL(blob);
-
-    const link =
-      document.createElement("a");
+    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
     link.href = url;
-
-    link.download =
-      "contacts.csv";
-
+    link.download = "contacts.csv";
     document.body.appendChild(link);
-
     link.click();
-
     document.body.removeChild(link);
-
     URL.revokeObjectURL(url);
 
-    toast.success(
-      "Contacts exported successfully."
-    );
-
+    toast.success("Contacts exported successfully.");
   };
 
   if (loading) {
-
     return (
-
       <div className="flex h-[70vh] items-center justify-center">
-
         <div className="text-center">
-
-          <div className="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
-
-          <h2 className="mt-6 text-3xl font-bold text-slate-900">
-
-            Loading Contacts...
-
-          </h2>
-
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-navy-100 border-t-navy-700" />
+          <h2 className="mt-5 text-xl font-bold text-navy-950">Loading Contacts...</h2>
         </div>
-
       </div>
-
     );
-
   }
 
   return (
+    <div className="space-y-5">
+      {/* Header */}
+      <motion.div
+        {...fadeUp(0)}
+        className="relative overflow-hidden rounded-2xl bg-navy-950 p-5 shadow-[0_16px_40px_-20px_rgba(7,20,46,0.4)] sm:p-6"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-50" />
+        <div className="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-gold-500/12 blur-[90px]" />
 
-    <div className="space-y-10">
-
-      {/* Hero Header */}
-
-      <div className="overflow-hidden rounded-[34px] bg-gradient-to-r from-blue-700 via-cyan-600 to-sky-500 p-[1px] shadow-2xl">
-
-        <div className="rounded-[33px] bg-white p-10">
-
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-
-            <div>
-
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-5 py-2 font-semibold text-blue-700">
-
-                <Users size={18} />
-
-                Contact Management
-
-              </div>
-
-              <h1 className="mt-6 text-5xl font-black text-slate-900">
-
-                Customer
-
-                <span className="text-blue-600">
-
-                  {" "}Enquiries
-
-                </span>
-
-              </h1>
-
-              <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-
-                View, search, export and manage every customer enquiry
-                received through your website.
-
-              </p>
-
+        <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/70">
+              <Users size={11} className="text-gold-400" />
+              Contact Management
             </div>
 
-            <div className="rounded-3xl bg-slate-50 p-8 text-center">
+            <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              Customer <span className="text-gradient-gold">Enquiries</span>
+            </h1>
 
-              <CheckCircle2
-                size={34}
-                className="mx-auto text-green-600"
-              />
-
-              <h2 className="mt-4 text-5xl font-black text-blue-600">
-
-                {filteredContacts.length}
-
-              </h2>
-
-              <p className="mt-2 text-slate-500">
-
-                Total Contacts
-
-              </p>
-
-            </div>
-
+            <p className="mt-2 max-w-xl text-sm text-white/60">
+              View, search, export and manage every customer enquiry
+              received through your website.
+            </p>
           </div>
 
+          <div className="rounded-xl border border-white/10 bg-white/[0.06] px-6 py-4 text-center backdrop-blur-xl">
+            <CheckCircle2 size={20} className="mx-auto text-emerald-400" />
+            <h2 className="mt-1.5 text-2xl font-extrabold text-white">
+              {filteredContacts.length}
+            </h2>
+            <p className="text-[11px] text-white/50">Total Contacts</p>
+          </div>
         </div>
-
-      </div>
+      </motion.div>
 
       {/* Toolbar */}
-            <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
-          {/* Left */}
-
+      <motion.div
+        {...fadeUp(0.05)}
+        className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-sm"
+      >
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-
-            <h2 className="text-3xl font-black text-slate-900">
-
-              Manage Contacts
-
-            </h2>
-
-            <p className="mt-2 text-slate-500">
-
+            <h2 className="text-lg font-extrabold text-navy-950">Manage Contacts</h2>
+            <p className="text-xs text-slate-500">
               Search, export and manage customer enquiries.
-
             </p>
-
           </div>
 
-          {/* Right Buttons */}
-
-          <div className="flex flex-wrap gap-4">
-
+          <div className="flex flex-wrap gap-2.5">
             <button
               onClick={loadContacts}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 shadow hover:bg-slate-50 transition"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             >
-
-              <ArrowRight size={18} />
-
+              <RotateCw size={14} />
               Refresh
-
             </button>
 
             <button
               onClick={exportCSV}
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-3 font-semibold text-white shadow-lg hover:scale-105 transition duration-300"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-navy-950 shadow-sm transition hover:bg-gold-400"
             >
-
-              <Download size={18} />
-
+              <Download size={14} />
               Export CSV
-
             </button>
-
           </div>
-
         </div>
 
-        {/* Search */}
-
-        <div className="mt-8">
-
-          <ContactSearch
-            search={search}
-            setSearch={setSearch}
-          />
-
+        <div className="mt-4">
+          <ContactSearch search={search} setSearch={setSearch} />
         </div>
-
-      </div>
+      </motion.div>
 
       {/* Summary Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          {
+            label: "Total Contacts",
+            value: filteredContacts.length,
+            icon: Users,
+            accent: false,
+          },
+          {
+            label: "Search Status",
+            value: search === "" ? "All" : "Filtered",
+            icon: Search,
+            accent: true,
+          },
+          {
+            label: "System",
+            value: "Online",
+            icon: CheckCircle2,
+            accent: false,
+            status: true,
+          },
+        ].map((card, i) => (
+          <motion.div
+            key={card.label}
+            {...fadeUp(0.05 * i)}
+            className="rounded-xl border border-navy-950/5 bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-slate-500">{card.label}</p>
+                <h2
+                  className={`mt-1.5 text-xl font-extrabold ${
+                    card.status
+                      ? "text-emerald-600"
+                      : card.accent
+                      ? "text-gold-600"
+                      : "text-navy-950"
+                  }`}
+                >
+                  {card.value}
+                </h2>
+              </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-
-        {/* Total */}
-
-        <div className="rounded-3xl border border-blue-100 bg-white p-7 shadow-lg">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-
-                Total Contacts
-
-              </p>
-
-              <h2 className="mt-3 text-5xl font-black text-blue-600">
-
-                {filteredContacts.length}
-
-              </h2>
-
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-950 text-white">
+                <card.icon size={18} />
+              </div>
             </div>
-
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500">
-
-              <Users
-                size={32}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Search */}
-
-        <div className="rounded-3xl border border-cyan-100 bg-white p-7 shadow-lg">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-
-                Search Status
-
-              </p>
-
-              <h2 className="mt-3 text-3xl font-black text-cyan-600">
-
-                {search === ""
-                  ? "All"
-                  : "Filtered"}
-
-              </h2>
-
-            </div>
-
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600">
-
-              <Search
-                size={30}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* System */}
-
-        <div className="rounded-3xl border border-green-100 bg-white p-7 shadow-lg">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500">
-
-                System
-
-              </p>
-
-              <h2 className="mt-3 text-3xl font-black text-green-600">
-
-                Online
-
-              </h2>
-
-            </div>
-
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500">
-
-              <CheckCircle2
-                size={30}
-                className="text-white"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
+          </motion.div>
+        ))}
       </div>
 
       {/* Contacts Table */}
-
-      <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-xl">
-
+      <motion.div {...fadeUp(0.1)}>
         <ContactTable
           contacts={filteredContacts}
           onView={handleView}
           onDelete={handleDelete}
         />
+      </motion.div>
 
-      </div>
-
-      <ContactModal
-        contact={selectedContact}
-        onClose={() =>
-          setSelectedContact(null)
-        }
-      />
-
+      <ContactModal contact={selectedContact} onClose={() => setSelectedContact(null)} />
     </div>
-
   );
-
 }
 
 export default Contacts;

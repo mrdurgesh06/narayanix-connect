@@ -1,8 +1,6 @@
-import {
-  Link,
-  NavLink,
-  useNavigate,
-} from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 import {
   LayoutDashboard,
@@ -12,264 +10,149 @@ import {
   LogOut,
   ArrowLeft,
   ShieldCheck,
-  Sparkles,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 import logo from "../assets/logo.png";
 
-function Sidebar() {
+const menu = [
+  { title: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+  { title: "Contacts", icon: Users, path: "/admin/contacts" },
+  { title: "Proposals", icon: FileText, path: "/admin/proposals" },
+  { title: "Settings", icon: Settings, path: "/admin/settings" },
+];
 
+function Sidebar() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem("adminSidebarCollapsed") === "true"
+  );
 
-    localStorage.removeItem(
-      "adminToken"
-    );
-
-    localStorage.removeItem(
-      "rememberAdmin"
-    );
-
-    navigate("/admin/login");
-
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      localStorage.setItem("adminSidebarCollapsed", String(!prev));
+      return !prev;
+    });
   };
 
-  const menu = [
-
-    {
-      title: "Dashboard",
-      icon: LayoutDashboard,
-      path: "/admin/dashboard",
-    },
-
-    {
-      title: "Contacts",
-      icon: Users,
-      path: "/admin/contacts",
-    },
-
-    {
-      title: "Proposals",
-      icon: FileText,
-      path: "/admin/proposals",
-    },
-
-    {
-  title: "Settings",
-  icon: Settings,
-  path: "/admin/settings",
-},
-
-  ];
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("rememberAdmin");
+    navigate("/admin/login");
+  };
 
   return (
-
-    <aside className="flex min-h-screen w-80 flex-col overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white shadow-2xl">
+    <motion.aside
+      animate={{ width: collapsed ? 76 : 232 }}
+      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="relative flex min-h-screen flex-none flex-col overflow-hidden bg-navy-950 text-white shadow-xl"
+    >
+      {/* Collapse toggle */}
+      <button
+        onClick={toggleCollapsed}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="absolute right-3 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-white/50 transition hover:bg-white/10 hover:text-white"
+      >
+        {collapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+      </button>
 
       {/* Logo */}
+      <div className="border-b border-white/10 p-4">
+        <div className="flex items-center gap-2.5">
+          <img src={logo} alt="NARAYANIX Connect" className="h-9 w-9 flex-none object-contain" />
 
-      <div className="border-b border-slate-800 p-8">
-
-        <div className="flex items-center gap-5">
-
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white p-2 shadow-xl">
-
-            <img src={logo} alt="NARAYANIX Connect" className="h-full w-full object-contain" />
-
-          </div>
-
-          <div>
-
-            <h1 className="text-3xl font-black">
-
-              NARAYANIX Admin
-
-            </h1>
-
-            <p className="mt-1 text-slate-400">
-
-              Control Center
-
-            </p>
-
-          </div>
-
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden whitespace-nowrap"
+              >
+                <h1 className="text-sm font-extrabold leading-tight">NARAYANIX Admin</h1>
+                <p className="text-[11px] text-white/40">Control Center</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-5">
-
-          <div className="flex items-center gap-3">
-
-            <ShieldCheck
-              size={22}
-              className="text-cyan-400"
-            />
-
-            <span className="font-semibold">
-
-              Secure Admin Access
-
-            </span>
-
+        {!collapsed && (
+          <div className="mt-4 rounded-lg border border-gold-500/20 bg-gold-500/[0.06] px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={14} className="flex-none text-gold-400" />
+              <span className="text-xs font-semibold text-white/85">Secure Admin Access</span>
+            </div>
           </div>
-
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-
-            Authorized users only.
-
-          </p>
-
-        </div>
-
+        )}
       </div>
 
       {/* Navigation */}
-
-      <nav className="flex-1 space-y-3 p-6">
-
-              {menu.map((item) => {
-
+      <nav className="flex-1 space-y-1 p-3">
+        {menu.map((item) => {
           const Icon = item.icon;
 
           return (
-
             <NavLink
               key={item.path}
               to={item.path}
+              title={collapsed ? item.title : undefined}
               className={({ isActive }) =>
-                `group flex items-center justify-between rounded-2xl px-5 py-4 transition-all duration-300 ${
+                `group flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-sm font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-xl"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
+                    ? "bg-gold-500 text-navy-950"
+                    : "text-white/65 hover:bg-white/[0.06] hover:text-white"
+                } ${collapsed ? "justify-center" : ""}`
               }
             >
+              <Icon size={18} className="flex-none" />
 
-              {({ isActive }) => (
-
-                <>
-
-                  <div className="flex items-center gap-4">
-
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl transition ${
-                        isActive
-                          ? "bg-white/20"
-                          : "bg-slate-800 group-hover:bg-slate-700"
-                      }`}
-                    >
-
-                      <Icon size={22} />
-
-                    </div>
-
-                    <div>
-
-                      <h3 className="font-semibold">
-
-                        {item.title}
-
-                      </h3>
-
-                      <p
-                        className={`text-xs ${
-                          isActive
-                            ? "text-blue-100"
-                            : "text-slate-500"
-                        }`}
-                      >
-
-                        Manage {item.title}
-
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  {isActive && (
-
-                    <Sparkles
-                      size={20}
-                      className="text-yellow-300"
-                    />
-
-                  )}
-
-                </>
-
-              )}
-
+              {!collapsed && <span className="truncate">{item.title}</span>}
             </NavLink>
-
           );
-
         })}
-
       </nav>
 
       {/* Bottom Section */}
-
-      <div className="border-t border-slate-800 p-6 space-y-4">
-
-              <Link
+      <div className="space-y-2 border-t border-white/10 p-3">
+        <Link
           to="/"
-          className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          title={collapsed ? "Back to Website" : undefined}
+          className={`flex items-center gap-2.5 rounded-lg border border-white/15 px-2.5 py-2.5 text-sm font-semibold text-white/85 transition hover:bg-white/[0.06] ${
+            collapsed ? "justify-center" : ""
+          }`}
         >
-
-          <ArrowLeft size={20} />
-
-          Back to Website
-
+          <ArrowLeft size={16} className="flex-none" />
+          {!collapsed && <span>Back to Website</span>}
         </Link>
 
         <button
           onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 px-5 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          title={collapsed ? "Logout" : undefined}
+          className={`flex w-full items-center gap-2.5 rounded-lg bg-red-600/90 px-2.5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 ${
+            collapsed ? "justify-center" : ""
+          }`}
         >
-
-          <LogOut size={20} />
-
-          Logout
-
+          <LogOut size={16} className="flex-none" />
+          {!collapsed && <span>Logout</span>}
         </button>
 
-        {/* Footer */}
-
-        <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-center">
-
-          <div className="flex items-center justify-center gap-2">
-
-            <ShieldCheck
-              size={18}
-              className="text-green-400"
-            />
-
-            <span className="text-sm font-semibold text-green-400">
-
-              System Secure
-
-            </span>
-
+        {!collapsed && (
+          <div className="mt-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 text-center">
+            <div className="flex items-center justify-center gap-1.5">
+              <ShieldCheck size={12} className="text-emerald-400" />
+              <span className="text-[11px] font-semibold text-emerald-400">System Secure</span>
+            </div>
+            <p className="mt-1 text-[10px] leading-4 text-white/35">
+              NARAYANIX Connect · Admin v2.0
+            </p>
           </div>
-
-          <p className="mt-3 text-sm leading-6 text-slate-400">
-
-            NARAYANIX Connect
-            <br />
-            Admin Panel v2.0
-
-          </p>
-
-        </div>
-
+        )}
       </div>
-
-    </aside>
-
+    </motion.aside>
   );
-
 }
 
 export default Sidebar;
