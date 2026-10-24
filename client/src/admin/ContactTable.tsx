@@ -14,9 +14,11 @@ type Props = {
   contacts: Contact[];
   onView: (contact: Contact) => void;
   onDelete: (contact: Contact) => void;
+  /** Hide the Delete button for users without the delete permission. */
+  canDelete?: boolean;
 };
 
-function ContactTable({ contacts, onView, onDelete }: Props) {
+function ContactTable({ contacts, onView, onDelete, canDelete = true }: Props) {
   return (
     <div className="overflow-hidden rounded-xl border border-navy-950/5 bg-white shadow-sm">
       {/* Header */}
@@ -129,13 +131,15 @@ function ContactTable({ contacts, onView, onDelete }: Props) {
                         View
                       </button>
 
-                      <button
-                        onClick={() => onDelete(item)}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-red-700"
-                      >
-                        <Trash2 size={14} />
-                        Delete
-                      </button>
+                      {canDelete && (
+                        <button
+                          onClick={() => onDelete(item)}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-red-700"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

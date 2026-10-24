@@ -5,6 +5,8 @@ import { Download, Users, Search, RotateCw, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import api from "../api/api";
+import { useAdminAuth } from "./AdminAuthContext";
+import { PERMISSIONS } from "./auth";
 
 import type { Contact } from "./types";
 
@@ -19,6 +21,7 @@ const fadeUp = (delay = 0) => ({
 });
 
 function Contacts() {
+  const { can } = useAdminAuth();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -244,6 +247,7 @@ function Contacts() {
           contacts={filteredContacts}
           onView={handleView}
           onDelete={handleDelete}
+          canDelete={can(PERMISSIONS.contactsDelete)}
         />
       </motion.div>
 

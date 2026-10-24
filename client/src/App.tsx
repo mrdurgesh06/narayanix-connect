@@ -20,6 +20,10 @@ import Dashboard from "./admin/Dashboard";
 import Contacts from "./admin/Contacts";
 import Proposals from "./admin/Proposals";
 import Settings from "./admin/Settings";
+import Users from "./admin/Users";
+import ChangePassword from "./admin/ChangePassword";
+import RequireAccess from "./admin/RequireAccess";
+import { PERMISSIONS } from "./admin/auth";
 import AdminLayout from "./admin/AdminLayout";
 import ProtectedRoute from "./admin/ProtectedRoute";
 
@@ -74,6 +78,17 @@ function App() {
           element={<Login />}
         />
 
+        {/* Change password (also forced for new / reset accounts) */}
+
+        <Route
+          path="/admin/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Protected Admin */}
 
         <Route
@@ -92,18 +107,39 @@ function App() {
 
           <Route
             path="contacts"
-            element={<Contacts />}
+            element={
+              <RequireAccess permission={PERMISSIONS.contactsView}>
+                <Contacts />
+              </RequireAccess>
+            }
           />
 
           <Route
             path="proposals"
-            element={<Proposals />}
+            element={
+              <RequireAccess permission={PERMISSIONS.proposalsView}>
+                <Proposals />
+              </RequireAccess>
+            }
           />
 
  <Route
     path="settings"
-    element={<Settings />}
+    element={
+      <RequireAccess permission={PERMISSIONS.settingsEdit}>
+        <Settings />
+      </RequireAccess>
+    }
   />
+
+          <Route
+            path="users"
+            element={
+              <RequireAccess superAdminOnly>
+                <Users />
+              </RequireAccess>
+            }
+          />
 
         </Route>
 

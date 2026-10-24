@@ -4,6 +4,8 @@ import { FileText, Search, RefreshCw, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import api from "../api/api";
+import { useAdminAuth } from "./AdminAuthContext";
+import { PERMISSIONS } from "./auth";
 
 import ProposalModal from "./ProposalModal";
 
@@ -27,6 +29,7 @@ const fadeUp = (delay = 0) => ({
 });
 
 function Proposals() {
+  const { can } = useAdminAuth();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -281,12 +284,14 @@ function Proposals() {
                           View
                         </button>
 
-                        <button
-                          onClick={() => handleDelete(item)}
-                          className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700"
-                        >
-                          Delete
-                        </button>
+                        {can(PERMISSIONS.proposalsDelete) && (
+                          <button
+                            onClick={() => handleDelete(item)}
+                            className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

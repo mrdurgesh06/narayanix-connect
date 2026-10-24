@@ -1,0 +1,18 @@
+# Keep the Docker build context small and keep secrets out of the image
+**/.git
+**/.vs
+**/bin
+**/obj
+**/node_modules
+client
+docs
+**/*.user
+**/.env
+**/.env.*
+
+# Real settings files can hold passwords - never bake them into an image
+**/appsettings.json
+**/appsettings.*.json
+
+# Uploaded files are runtime data, not part of the image
+**/uploads/*

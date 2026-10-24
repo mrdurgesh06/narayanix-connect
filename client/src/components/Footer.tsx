@@ -175,14 +175,6 @@ function Footer() {
             <Link to="/faq" className="transition hover:text-white/70">
               Terms
             </Link>
-
-            {/* Intentionally understated — not a normal-user entry point */}
-            <Link
-              to="/admin/login"
-              className="text-[11px] text-white/20 transition hover:text-white/40"
-            >
-              Admin Login
-            </Link>
           </div>
         </div>
       </Container>

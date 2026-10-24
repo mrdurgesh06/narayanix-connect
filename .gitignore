@@ -29,3 +29,32 @@ Thumbs.db
 
 # VS Code
 .vscode/settings.json
+# ----------------------------------------------------------------------
+# Secrets & local configuration - never publish these
+# ----------------------------------------------------------------------
+.env.*
+!.env.example
+client/.env.*
+
+# ASP.NET Core API: the real settings file holds the connection string, passwords and JWT secret.
+# Commit only appsettings.example.json (a copy with empty values).
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.example.json
+
+# Other secret / key material
+secrets.json
+*.pfx
+*.p12
+*.key
+
+# .NET / Visual Studio build output
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# API uploads (logo / favicon uploaded from the admin panel)
+server/NarayanixConnect.Api/uploads/*
+!server/NarayanixConnect.Api/uploads/.gitkeep

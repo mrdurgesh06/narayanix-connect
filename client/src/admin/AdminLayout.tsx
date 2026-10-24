@@ -1,8 +1,11 @@
 import { Outlet } from "react-router-dom";
 import { Bell, Search } from "lucide-react";
 import Sidebar from "./Sidebar";
+import { useAdminAuth } from "./AdminAuthContext";
 
 function AdminLayout() {
+  const { admin } = useAdminAuth();
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
       {/* Sidebar */}
@@ -54,17 +57,17 @@ function AdminLayout() {
               <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2 shadow-sm transition-all duration-200 hover:shadow-md">
                 {/* Avatar */}
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0B1F3A] via-[#163B6C] to-[#C9A227] text-base font-bold text-white shadow-md">
-                  A
+                  {admin.name.charAt(0).toUpperCase()}
                 </div>
 
                 {/* Details */}
                 <div className="hidden md:block leading-tight">
                   <h3 className="text-sm font-semibold text-slate-900">
-                    Administrator
+                    {admin.name}
                   </h3>
 
                   <p className="text-xs font-medium tracking-wide text-amber-600">
-                    Super Admin
+                    {admin.role === "SuperAdmin" ? "Super Admin" : "Staff"} · {admin.userCode}
                   </p>
                 </div>
               </div>

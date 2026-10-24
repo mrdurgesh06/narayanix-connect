@@ -8,7 +8,7 @@ import api from "../api/api";
 import {
   Eye,
   EyeOff,
-  Mail,
+  User,
   Lock,
   ArrowLeft,
   ArrowRight,
@@ -26,7 +26,7 @@ const highlights = [
 function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -35,8 +35,8 @@ function Login() {
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      toast.error("Please enter email and password.");
+    if (!loginId.trim() || !password.trim()) {
+      toast.error("Please enter your Login ID and password.");
       return;
     }
 
@@ -44,7 +44,7 @@ function Login() {
 
     try {
       const res = await api.post("/admin/login", {
-        email: email.trim(),
+        loginId: loginId.trim(),
         password,
       });
 
@@ -56,12 +56,14 @@ function Login() {
         localStorage.removeItem("rememberAdmin");
       }
 
-      navigate("/admin/dashboard");
+      navigate(
+        res.data.admin?.mustChangePassword ? "/admin/change-password" : "/admin/dashboard"
+      );
     } catch (error) {
       const message =
         axios.isAxiosError(error) && error.response?.data?.message
           ? error.response.data.message
-          : "Invalid email or password.";
+          : "Invalid Login ID or password.";
 
       toast.error(message);
     } finally {
@@ -186,22 +188,23 @@ function Login() {
             Welcome back
           </h2>
           <p className="mt-2 text-slate-500">
-            Sign in with your administrator credentials to continue.
+            Sign in with your Login ID and password to continue.
           </p>
 
           <form onSubmit={login} className="mt-9">
             <label className="mb-2 block text-sm font-semibold text-slate-700">
-              Email Address
+              Login ID
             </label>
 
             <div className="relative mb-5">
-              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
 
               <input
-                type="email"
-                placeholder="you@narayanixconnect.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                autoComplete="username"
+                placeholder="NRXCON0001"
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
                 className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 text-navy-950 transition focus:border-navy-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy-700/15"
               />
             </div>
@@ -241,7 +244,11 @@ function Login() {
                 Remember Me
               </label>
 
-              <button type="button" className="text-sm font-semibold text-navy-700 hover:text-gold-600">
+              <button
+                type="button"
+                onClick={() => toast("Please contact your Super Admin to reset your password.")}
+                className="text-sm font-semibold text-navy-700 hover:text-gold-600"
+              >
                 Forgot Password?
               </button>
             </div>

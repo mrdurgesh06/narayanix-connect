@@ -1,4 +1,5 @@
 import { Navigate } from "react-router-dom";
+import { AdminAuthProvider } from "./AdminAuthContext";
 
 type Props = {
   children: React.ReactNode;
@@ -11,7 +12,8 @@ function ProtectedRoute({ children }: Props) {
     return <Navigate to="/admin/login" replace />;
   }
 
-  return <>{children}</>;
+  // Loads the signed-in user (role + permissions) for everything inside the admin area.
+  return <AdminAuthProvider>{children}</AdminAuthProvider>;
 }
 
 export default ProtectedRoute;

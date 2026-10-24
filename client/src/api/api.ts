@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// All API routes live under /api (the .NET backend also serves the website itself).
+const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: `${apiBase}/api`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,6 +27,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // New / reset accounts must set their own password before using anything else.
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.code === "PASSWORD_CHANGE_REQUIRED" &&
+      window.location.pathname !== "/admin/change-password"
+    ) {
+      window.location.href = "/admin/change-password";
+    }
+
     if (
       error.response?.status === 401 &&
       window.location.pathname.startsWith("/admin") &&

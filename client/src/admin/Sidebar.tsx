@@ -7,6 +7,8 @@ import {
   Users,
   FileText,
   Settings,
+  UserCog,
+  KeyRound,
   LogOut,
   ArrowLeft,
   ShieldCheck,
@@ -15,16 +17,33 @@ import {
 } from "lucide-react";
 
 import logo from "../assets/logo.png";
+import { useAdminAuth } from "./AdminAuthContext";
+import { PERMISSIONS } from "./auth";
 
-const menu = [
+type MenuItem = {
+  title: string;
+  icon: typeof LayoutDashboard;
+  path: string;
+  permission?: string;
+  superAdminOnly?: boolean;
+};
+
+const menu: MenuItem[] = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
-  { title: "Contacts", icon: Users, path: "/admin/contacts" },
-  { title: "Proposals", icon: FileText, path: "/admin/proposals" },
-  { title: "Settings", icon: Settings, path: "/admin/settings" },
+  { title: "Contacts", icon: Users, path: "/admin/contacts", permission: PERMISSIONS.contactsView },
+  { title: "Proposals", icon: FileText, path: "/admin/proposals", permission: PERMISSIONS.proposalsView },
+  { title: "Users", icon: UserCog, path: "/admin/users", superAdminOnly: true },
+  { title: "Settings", icon: Settings, path: "/admin/settings", permission: PERMISSIONS.settingsEdit },
 ];
 
 function Sidebar() {
   const navigate = useNavigate();
+  const { can, isSuperAdmin } = useAdminAuth();
+
+  // Only show the pages this user may open (the server enforces it as well).
+  const visibleMenu = menu.filter((item) =>
+    item.superAdminOnly ? isSuperAdmin : item.permission ? can(item.permission) : true
+  );
 
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem("adminSidebarCollapsed") === "true"
@@ -91,7 +110,7 @@ function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
-        {menu.map((item) => {
+        {visibleMenu.map((item) => {
           const Icon = item.icon;
 
           return (
@@ -126,6 +145,17 @@ function Sidebar() {
         >
           <ArrowLeft size={16} className="flex-none" />
           {!collapsed && <span>Back to Website</span>}
+        </Link>
+
+        <Link
+          to="/admin/change-password"
+          title={collapsed ? "Change Password" : undefined}
+          className={`flex items-center gap-2.5 rounded-lg border border-white/15 px-2.5 py-2.5 text-sm font-semibold text-white/85 transition hover:bg-white/[0.06] ${
+            collapsed ? "justify-center" : ""
+          }`}
+        >
+          <KeyRound size={16} className="flex-none" />
+          {!collapsed && <span>Change Password</span>}
         </Link>
 
         <button
