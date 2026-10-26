@@ -302,7 +302,7 @@ app.Use(async (context, next) =>
 app.MapControllers();
 
 // Health check (the old Node app answered on "/"; the SEO phase will serve the React app there).
-app.MapGet("/", () => Results.Json(new { success = true, message = "🚀 NARAYANIX Connect API Running Successfully" }));
+app.MapGet("/", () => Results.Json(new { success = true, message = "🚀 NarayaniX Connect API Running Successfully" }));
 app.MapGet("/api/health", () => Results.Json(new { success = true, status = "ok" }));
 
 // Unknown /api/* routes → JSON 404 (same message as the Node API).

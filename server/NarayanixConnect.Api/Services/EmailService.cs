@@ -41,7 +41,7 @@ public class EmailService : IEmailService
         try
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("NARAYANIX Connect", _options.User));
+            message.From.Add(new MailboxAddress("NarayaniX Connect", _options.User));
             message.To.Add(MailboxAddress.Parse(_options.NotifyTo));
             message.Subject = subject;
             message.Body = new BodyBuilder { HtmlBody = html }.ToMessageBody();

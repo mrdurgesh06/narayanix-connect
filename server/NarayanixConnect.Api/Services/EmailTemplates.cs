@@ -12,7 +12,7 @@ public static class EmailTemplates
     private static string E(string? value) => WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(value) ? "-" : value);
 
     public static (string Subject, string Html) ForContact(Contact c) => (
-        "New Contact Enquiry — NARAYANIX Connect",
+        "New Contact Enquiry — NarayaniX Connect",
         $"""
         <h2>New Contact Enquiry</h2>
         <p><strong>Name:</strong> {E(c.Name)}</p>
@@ -23,7 +23,7 @@ public static class EmailTemplates
         """);
 
     public static (string Subject, string Html) ForProposal(Proposal p) => (
-        "New Proposal Request — NARAYANIX Connect",
+        "New Proposal Request — NarayaniX Connect",
         $"""
         <h2>New Proposal Request</h2>
         <p><strong>Company:</strong> {E(p.Company)}</p>

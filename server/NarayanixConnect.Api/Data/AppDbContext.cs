@@ -5,7 +5,7 @@ using NarayanixConnect.Api.Entities;
 namespace NarayanixConnect.Api.Data;
 
 /// <summary>
-/// EF Core context for the NARAYANIX Connect database objects.
+/// EF Core context for the NarayaniX Connect database objects.
 /// Every table here uses the shared-database prefix "nrx_con_" (see docs/DATABASE.md).
 /// </summary>
 public class AppDbContext : DbContext
